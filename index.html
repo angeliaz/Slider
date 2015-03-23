@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Slider</title>
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/slider.css">
+</head>
+<body>
+	<div id="wrap1">
+			
+		<!-- <div class="mod-slider">
+			<div class="mod-slider-pics">
+				<ul>
+					<li>
+						<div class="w-bigPic">
+							<a href="">
+								<img src="images/img1.jpg">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-bigPic">
+							<a href="">
+								<img src="images/img2.jpg">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-bigPic">
+							<a href="">
+								<img src="images/img1.jpg">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-bigPic">
+							<a href="">
+								<img src="images/img2.jpg">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-bigPic">
+							<a href="">
+								<img src="images/img1.jpg">
+							</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		
+			<div class="mod-slider-ctrl">
+				<ul>
+					<li>
+						<div class="w-smallPic">
+							<a href="">
+								<img src="images/s1.png">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-smallPic">
+							<a href="">
+								<img src="images/s2.png">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-smallPic">
+							<a href="">
+								<img src="images/s1.png">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-smallPic">
+							<a href="">
+								<img src="images/s2.png">
+							</a>
+						</div>
+					</li>
+					<li>
+						<div class="w-smallPic">
+							<a href="">
+								<img src="images/s1.png">
+							</a>
+						</div>
+					</li>
+		
+				</ul>
+		
+			</div>
+		</div> -->
+
+	</div>
+
+	<div id="wrap2"></div>
+
+	<script src="Slider.js"></script>
+	<script>
+		var settings = {
+			wrapNode:   'wrap1'     // 外部容器
+			,autoScroll: false     // 是够自动滚动
+			,hasSmallPic: true     // 是否有小图
+			,picNumber: 5          // 轮播图个数
+			,direction: 'right'
+			,imageData: [
+				{bigPic: 'images/img1.jpg', smallPic: 'images/s1.png', link: 'http://www.qq.com'}, 
+				{bigPic: 'images/img2.jpg', smallPic: 'images/s2.png', link: 'http://www.qq.com'}, 
+				{bigPic: 'images/img1.jpg', smallPic: 'images/s1.png', link: 'http://www.qq.com'},
+				{bigPic: 'images/img2.jpg', smallPic: 'images/s2.png', link: 'http://www.qq.com'}, 
+				{bigPic: 'images/img1.jpg', smallPic: 'images/s1.png', link: 'http://www.qq.com'}
+			]
+			
+		};
+
+		var slider = new Slider(settings);
+		// slider.init();
+		// console.log(slider.picNumber);
+	</script>
+</body>
+</html>

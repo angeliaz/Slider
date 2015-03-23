@@ -1,0 +1,11 @@
+.mod-slider {width:650px; overflow: hidden;}
+.mod-slider-pics {
+	position: relative;w/*idth: 650px;*/ height:390px; overflow: hidden;
+}
+.mod-slider-pics {width: 65000px;}
+.mod-slider-pics .w-bigPic {position: relative; display:block;float: left; width: 650px; height: 390px; line-height: 390px; /*top:0;*/}
+
+.mod-slider-ctrl {width: 57px; height:550px; position: absolute; left:500px; top:20px;}
+.mod-slider-ctrl ul li {margin-bottom: 15px; width:102px; height: 57px;}
+.mod-slider-ctrl ul li.current {border: 1px solid red;}
+.mod-slider-ctrl .w-smallPic {}
