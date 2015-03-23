@@ -27,6 +27,7 @@
 		this.initDom()
 		this.eventBind();
 		this.initScroll();
+
 	};
 
 
@@ -143,6 +144,7 @@
 			}
 		},
 
+		// 阻止默认事件
 		preventDefault: function (event) {
 			if(event.preventDefault) {
 				event.preventDefault();
@@ -151,12 +153,15 @@
 			}
 		},
 
+ 		// 获取dom
 		initDom: function () {
 
 			this.sliderPics = this.$('mod-slider-pics');
 			this.sliderCtrl = this.$('mod-slider-ctrl');
-			this.bigPics = this.$('w-bigPic', this.sliderPics);
 			this.sliderCtrlUl = this.$('mod-slider-ctrl-ul', this.sliderCtrl);
+
+			this.bigPics = this.sliderPics.getElementsByClassName('w-bigPic');
+			this.sliderCtrlLi = this.sliderCtrlUl.getElementsByTagName('li');
 
 		},
 
@@ -166,16 +171,17 @@
 			var _this = this;
 			this.timer = 0;
 
-			var sliderPic = this.sliderPics;
+			var sliderPics = this.sliderPics;
 
 			this.timer = setInterval(function () {
 
 				var picWidth = _this.bigPics.clientWidth;
-				var marginLeft = parseInt(_this.getCurrentStyle(sliderPic)['margin-left']) ;
+				var marginLeft = parseInt(_this.getCurrentStyle(sliderPics)['margin-left']) ;
 				
-				sliderPic.style.marginLeft = (marginLeft - picWidth) + 'px';
+				sliderPics.style.marginLeft = (marginLeft - picWidth) + 'px';
 				currentPage = (currentPage + 1) % 5 === 0 ? 0 : currentPage + 1;
 
+				// 触发小图高亮改变
 				
 
 			}, 50000);
@@ -194,21 +200,25 @@
 				var tagName = target.tagName.toLowerCase();
 				
 				var bigPics = _this.bigPics;
-				var sliderCtrl = _this.$('mod-slider-ctrl-ul');
+				var picWidth = bigPics[0].clientWidth;
 				
 				if(tagName === 'li' || tagName === 'img') {
 					
 					var index = target.getAttribute('data-index');
-					var ctrls = _this.sliderCtrlUl.getElementsByTagName('li');
+					var ctrls = _this.sliderCtrlLi;
+
+					_this.currentPage = index;
 
 					var i = 0, len = bigPics.length; 
 					for(; i < len; i++) {
-						bigPics[i].style.display = 'none';
+						// bigPics[i].style.display = 'none';
 						ctrls[i].setAttribute('class', '');
 					}
 
-					bigPics[index].style.display = 'block';
+					// bigPics[index].style.display = 'block';
 					ctrls[index].setAttribute('class', 'current');
+
+					_this.sliderPics.style.marginLeft = (0-_this.currentPage * picWidth) + 'px';
 
 				}
 
