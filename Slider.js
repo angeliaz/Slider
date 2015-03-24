@@ -6,37 +6,43 @@
  */
 (function(win, doc) {
 
+	'use strict';
+
 	var defaults = {
-		wrapNode: 'p-wrap',
-		autoScroll: false     // 是够自动滚动
-		,hasSmallPic: true    // 是否有小图
-		,picNumber: 4         // 轮播图个数
-		,gapTime  : 5000	  // 轮播时间
-		,direction: 'right'	  // 滚动方向
-		,imageData: {		  // 图片数据
+		wrapNode: 	   'p-wrap', // 外部容器
+		autoScroll:   false,     // 是够自动滚动
+		hasSmallPic:  true,      // 是否有小图
+		picNumber:    4,         // 轮播图个数
+		hasAnimation: false,     // 自动切换时是否需要有动画
+		gapTime  :    5000,	     // 轮播时间
+		imageData:    [		 	 // 图片数据
 			
-		}
+		]
 	};
 
 	var Slider = function(settings) {
 
-		this.timer = 0;       	// 定时器
+		this.timer = 0;       	// 自动滚动定时器
+		this.animateTimer = 0;  // 轮播动画定时器
 		this.currentPage = 0;	// 当前页页数
 		
-		this.settings = this.paramInit(settings);
+		this.paramInit(settings);
+		this.dataLength = this.imageData.length;
 		this.init();
-		this.initDom()
-
-		if(this.autoScroll) {
-			this.initScroll();
-		}
 		
-		this.eventBind();
-
 	};
 
 
 	Slider.prototype = {
+
+		// 初始化参数
+		paramInit: function (settings) {
+			
+			for(var attr in defaults) {
+				this[attr] = settings[attr];
+			}
+			
+		},
 
 		// getElementsByClassName(兼容IE8)
 		$: function (className, parentNode) {
@@ -48,9 +54,10 @@
 			if(doc.getElementsByClassName) {
 				return parentNode.getElementsByClassName(className);
 			} else {
-				var nodes = doc.getElementsByTagName("*");
-				var arr = [];			//用来保存符合的className；    
-	            for(var i = 0; i < nodes.length; i++){    
+					
+				var nodes = doc.getElementsByTagName('*');
+				var arr = [], i = 0, len = nodes.length;
+	            for(; i < len; i++){    
 	                if(this.hasClass(nodes[i],className)) arr.push(nodes[i]);    
 	            }    
 	            return arr;
@@ -70,14 +77,14 @@
 
 		// 参数node：将要获取其计算样式的元素节点
 		getCurrentStyle: function(element) {
+		    
 		    var style = null;
 		    
 		    if(window.getComputedStyle) {
-		        style = window.getComputedStyle(element, null);
+		        style = window.getComputedStyle(element, null)['margin-left'];
 		    }else{
-		        style = element.currentStyle;
+		        style = element.currentStyle.marginLeft;
 		    }
-		    
 		    return style;
 		},
 
@@ -112,17 +119,18 @@
 			}
 		},
 
-		// 初始化参数
-		paramInit: function (settings) {
-			
-			for(var attr in defaults) {
-				
-				this[attr] = settings[attr];
+		// 获取事件触发元素的标签名
+		getTarget: function (event) {
 
-			}
-			
+			var e = event || win.event;
+			var target =  e.target || e.srcElement;
+			return {
+				target: target,
+				tagName: target.tagName.toLowerCase()
+			};
+
 		},
-
+	
 
 		// 初始化大图dom
 		initPicsDom: function () {
@@ -130,13 +138,13 @@
 			var arr = [], imageData = this.imageData;
 			var i = 0, len = imageData.length;
 
-			arr.push('<div class="mod-slider-pics">');
+			arr.push('<div class="mod-slider-pics" style="margin-left:0px;">');
 
 			for(; i < len; i++) {
 				var item = imageData[i];
 				arr.push(	'<div class="w-bigPic">');
 				arr.push(		'<a href="' + item.link + '" target="_blank">')	;	
-				arr.push(			'<img src="' + item.bigPic + '">');			
+				arr.push(			'<img src="' + item.bigPic + '" title="' + item.title + '">');			
 				arr.push(		'</a>');
 				arr.push(	'</div>');
 			}
@@ -155,23 +163,23 @@
 			var theme = this.hasSmallPic ? 'smallPic-theme' : '';
 
 			arr.push('<div class="mod-slider-ctrl ' + theme + '">');
-			arr.push('<ul class="mod-slider-ctrl-ul">');
+			arr.push(	'<ul class="mod-slider-ctrl-ul">');
 
 			for(; i < len; i++) {
 				var item = imageData[i];
 				arr.push(i === 0 ? '<li class="current" data-index="' + i + '">' : '<li data-index="' + i + '">');
 				if(this.hasSmallPic) {
 					arr.push(	'<div class="w-smallPic">');
-					arr.push(		'<a href="#" target="_blank">')	;	
+					arr.push(		'<a href="' + item.link + '" target="_blank">')	;	
 					arr.push(			'<img src="' + item.smallPic + '"  data-index="' + i + '">');			
 					arr.push(		'</a>');
 					arr.push(	'</div>');
 				}
 				
-				arr.push('</li>')				
+				arr.push('</li>');				
 			}
 
-			arr.push('</ul>')
+			arr.push(	'</ul>');
 			arr.push('</div>');
 
 			return arr.join('');
@@ -179,22 +187,42 @@
 		},
 
 		// 插入至外部容器中
-		initWholeDom: function () {
+		initDom: function () {
 
-			return '<div class="mod-slider">' + this.initPicsDom() + this.initCtrlDom() + '</div>';
+			doc.getElementById(this.wrapNode).innerHTML = '<div class="mod-slider">' + this.initPicsDom() + this.initCtrlDom() + '</div>';
 
 		},
 
  		// 获取dom
-		initDom: function () {
+		getInitDom: function () {
 
-			this.sliderPics = this.$('mod-slider-pics')[0];
-			this.sliderCtrl = this.$('mod-slider-ctrl')[0];
+			this.sliderPics   = this.$('mod-slider-pics')[0];
+			this.sliderCtrl   = this.$('mod-slider-ctrl')[0];
 			this.sliderCtrlUl = this.$('mod-slider-ctrl-ul', this.sliderCtrl)[0];
-
-			this.bigPics = this.$('w-bigPic', this.sliderPics);
-			// this.sliderPics.getElementsByClassName('w-bigPic');
+			this.bigPics      = this.$('w-bigPic', this.sliderPics);
 			this.sliderCtrlLi = this.sliderCtrlUl.getElementsByTagName('li');
+
+		},
+
+		slideLeft: function (sliderPics, flag) {
+			
+			var _this = this;
+			var marginLeft1 = parseInt(_this.getCurrentStyle(sliderPics)) ;
+			var moveLeft = (_this.currentPage) % _this.dataLength === 0 ? 0 :  marginLeft1 - 25;
+
+			if(flag || (!flag && marginLeft1 % _this.bigPics[0].clientWidth !== 0)) {
+
+				_this.animateTimer = setTimeout(function () {
+					sliderPics.style.marginLeft = moveLeft + 'px';
+					_this.slideLeft(sliderPics, false);
+				}, 20);
+
+			} else {
+
+				clearTimeout(_this.animateTimer);
+
+			}
+			
 
 		},
 
@@ -203,27 +231,25 @@
 
 			var _this = this;
 			var sliderPics = this.sliderPics;
-
+			
 			this.timer = setInterval(function () {
 
 				var picWidth = _this.bigPics[0].clientWidth;
-				var marginLeft = parseInt(_this.getCurrentStyle(sliderPics)['margin-left']) ;
-				
-				_this.currentPage = (parseInt(_this.currentPage) + 1) % _this.picNumber === 0 ? 0 : ++_this.currentPage;
+				var marginLeft = parseInt(_this.getCurrentStyle(sliderPics)) ;
+				_this.currentPage = (parseInt(_this.currentPage) + 1) % _this.dataLength === 0 ? 0 : ++_this.currentPage;
+				var moveLeft = (_this.currentPage) % _this.dataLength === 0 ? 0 :  marginLeft - picWidth;
 
-				var moveLeft = (_this.currentPage) % _this.picNumber === 0 ? 0 :  marginLeft - picWidth;
-				
-				// 大图滚动(兼容IE)
-				if(sliderPics.style.marginLef) {
-					sliderPics.style.marginLeft = moveLeft + 'px';
-				} else {
-					sliderPics.style.cssText = 'margin-left:' + moveLeft + 'px';
-				}
-				
-				
-				// 触发小图高亮改变
 				var sliderCtrlLi = _this.sliderCtrlLi;
 				var i = 0, len = sliderCtrlLi.length;
+				
+				// 大图滚动
+				if(_this.hasAnimation) {
+					_this.slideLeft(sliderPics, true);
+				} else {
+					sliderPics.style.marginLeft = moveLeft + 'px';
+				}
+				
+				// 触发小图高亮改变
 				for(; i < len; i++) {
 					sliderCtrlLi[i].setAttribute('class', '');
 				}
@@ -233,26 +259,16 @@
 			}, _this.gapTime);
 		},
 
-		// 初始化滚动事件
-		initScroll: function () {
-
-			// var _this = this;
-			// var sliderPics = this.sliderPics;
-			this.scrollPics();
-			
-		},
-
-		
 		// 事件绑定
 		eventBind: function () {
 
 			var _this = this;
 
 			// 绑定鼠标移上事件
-			this.addEvent(_this.sliderCtrlUl, 'mouseover', function (e) {
-				var e = e || win.event;
-				var target =  e.target || e.srcElement;
-				var tagName = target.tagName.toLowerCase();
+			this.addEvent(_this.sliderCtrlUl, 'mouseover', function (event) {
+				
+				var target =  _this.getTarget(event).target;
+				var tagName = _this.getTarget(event).tagName;
 				
 				var bigPics = _this.bigPics;
 				var picWidth = bigPics[0].clientWidth;
@@ -261,41 +277,64 @@
 					
 					var index = target.getAttribute('data-index');
 					var ctrls = _this.sliderCtrlLi;
-
 					_this.currentPage = index;
 
+					// 去掉小图原有高亮
 					var i = 0, len = bigPics.length; 
 					for(; i < len; i++) {
-						// bigPics[i].style.display = 'none';
 						ctrls[i].setAttribute('class', '');
 					}
 
-					ctrls[index].setAttribute('class', 'current');  // 小图高亮
+					// 小图高亮显示
+					ctrls[index].setAttribute('class', 'current');  
 
+					// 大图滚动
 					_this.sliderPics.style.marginLeft = (0-_this.currentPage * picWidth) + 'px';
 					clearInterval(_this.timer);
 				}
 
-				_this.preventDefault(e);
+				_this.preventDefault(event);
+
 			});
 
 			// 绑定鼠标移出事件
-			this.addEvent(_this.sliderCtrlUl, 'mouseout', function (e) {
-				var e = e || win.event;
-				var target =  e.target || e.srcElement;
-				var tagName = target.tagName.toLowerCase();
+			this.addEvent(_this.sliderCtrlUl, 'mouseout', function (event) {
+
+				var tagName = _this.getTarget(event).tagName;
 				
 				if(tagName === 'li' || tagName === 'img') { 
 					
 					if(_this.autoScroll) {
 						_this.scrollPics();
 					}
-					
 
 				}
 			});
 
 			// 大图鼠标事件
+			this.addEvent(_this.sliderPics , 'mouseover', function (event) {
+
+				var tagName = _this.getTarget(event).tagName;
+
+				if(tagName === 'li' || tagName === 'img') {
+					clearInterval(_this.timer);
+				}
+
+			});
+
+			// 绑定鼠标移出事件
+			this.addEvent(_this.sliderPics, 'mouseout', function (event) {
+				
+				var tagName = _this.getTarget(event).tagName;
+				
+				if(tagName === 'li' || tagName === 'img') { 
+					
+					if(_this.autoScroll) {
+						_this.scrollPics();
+					}
+
+				}
+			});
 		
 		}
 
@@ -304,10 +343,14 @@
 
 	Slider.prototype.init = function () {
 
+		this.initDom();
+		this.getInitDom();
+		if(this.autoScroll) {
+			this.scrollPics();
+		}
+		this.eventBind();
 
-		doc.getElementById(this.wrapNode).innerHTML = this.initWholeDom();
-
-	}
+	};
 
 	window.Slider = Slider;
 

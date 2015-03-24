@@ -2,7 +2,7 @@
 .mod-slider-pics {
 	position: relative;w/*idth: 650px;*/ height:390px; overflow: hidden;
 }
-.mod-slider-pics {width: 65000px;}
+.mod-slider-pics {width: 65000px; margin-left: 0px;}
 .mod-slider-pics .w-bigPic {position: relative; display:block;float: left; width: 650px; height: 390px; line-height: 390px; /*top:0;*/}
 
 .mod-slider-ctrl {position: absolute; width: 570px; height:550px;  left:500px; top:350px;}
@@ -12,6 +12,6 @@
 
 
 /*换肤*/
-.mod-slider-ctrl.smallPic-theme {position: absolute; width: 570px; height:550px;  left:500px; top:50px;}
+.mod-slider-ctrl.smallPic-theme {position: absolute; width: 570px; height:550px;  left:500px; top:30px;}
 .mod-slider-ctrl.smallPic-theme ul li {float:none;margin-bottom: 15px; width:100px; height: 55px; }
 .mod-slider-ctrl.smallPic-theme ul li.current {border: 2px solid red;}
