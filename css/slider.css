@@ -5,7 +5,13 @@
 .mod-slider-pics {width: 65000px;}
 .mod-slider-pics .w-bigPic {position: relative; display:block;float: left; width: 650px; height: 390px; line-height: 390px; /*top:0;*/}
 
-.mod-slider-ctrl {width: 57px; height:550px; position: absolute; left:500px; top:20px;}
-.mod-slider-ctrl ul li {margin-bottom: 15px; width:102px; height: 57px;}
-.mod-slider-ctrl ul li.current {border: 1px solid red;}
+.mod-slider-ctrl {position: absolute; width: 570px; height:550px;  left:500px; top:350px;}
+.mod-slider-ctrl ul li {float:left; margin-bottom: 15px; width:11px; height: 11px; background: url(../images/dot.png); margin-right: 10px; cursor: pointer;}
+.mod-slider-ctrl ul li.current {background: url(../images/dot1.png);}
 .mod-slider-ctrl .w-smallPic {}
+
+
+/*换肤*/
+.mod-slider-ctrl.smallPic-theme {position: absolute; width: 570px; height:550px;  left:500px; top:50px;}
+.mod-slider-ctrl.smallPic-theme ul li {float:none;margin-bottom: 15px; width:100px; height: 55px; }
+.mod-slider-ctrl.smallPic-theme ul li.current {border: 2px solid red;}
