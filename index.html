@@ -16,12 +16,13 @@
 	<script src="Slider.js"></script>
 	<script>
 		var settings = {
-			wrapNode:     'p-wrap', // 外部容器
-			autoScroll:   true,      // 是够自动滚动
-			hasSmallPic:  true,      // 是否有小图
-			hasAnimation: true,	 // 自动切换时是否需要有动画
-			gapTime:     3000,
-			imageData:   [
+			autoScroll:   true,             // 是够自动滚动
+			hasSmallPic:  true,			    // 是否有小图(通过换肤即css实现)
+			hasAnimation: true,				// 自动切换时是否需要有动画
+			wrapNode:     'p-wrap',         // 外部容器
+			themeName:    'smallPic-theme', // 更换皮肤：如果hasSmallPic为true或者将来作为扩展
+			gapTime:      3000,				// 切换的时间间隔
+			imageData:   [					// 图片数据
 				{bigPic: 'images/img1.jpg', smallPic: 'images/s1.png', link: 'http://www.qq.com', title: '轮播图轮播图轮播图1'}, 
 				{bigPic: 'images/img2.jpg', smallPic: 'images/s2.png', link: 'http://www.qq.com', title: '轮播图轮播图轮播图2'}, 
 				{bigPic: 'images/img3.jpg', smallPic: 'images/s1.png', link: 'http://www.qq.com', title: '轮播图轮播图轮播图3'},

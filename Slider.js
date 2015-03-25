@@ -9,15 +9,17 @@
 	'use strict';
 
 	var defaults = {
-		wrapNode: 	   'p-wrap', // 外部容器
-		autoScroll:   false,     // 是够自动滚动
-		hasSmallPic:  true,      // 是否有小图
-		picNumber:    4,         // 轮播图个数
+		
+		autoScroll:   true,     // 是够自动滚动
+		hasSmallPic:  false,      // 是否有小图
 		hasAnimation: false,     // 自动切换时是否需要有动画
-		gapTime  :    5000,	     // 轮播时间
-		imageData:    [		 	 // 图片数据
-			
-		]
+		picNumber:    4,         // 轮播图个数
+		gapTime  :    5000,	     // 切换的时间间隔
+		wrapNode: 	  'p-wrap', // 外部容器
+		themeName:    '',		 // 更换皮肤：如果hasSmallPic为true或者将来作为扩展
+		direction:    'left',	 // 如果hasAnimation为true时,图片滚动方向
+		imageData:    []	 	 // 图片数据
+
 	};
 
 	var Slider = function(settings) {
@@ -66,12 +68,15 @@
 		},
 
 		// 判断是否有某个class
-		hasClass: function (node,className){    
-            var cNames=node.className.split(/\s+/);//根据空格来分割node里的元素；    
-            for(var i=0;i<cNames.length;i++){    
-                if(cNames[i]==className) return true;    
+		hasClass: function (node,className){  
+
+            var cNames = node.className.split(/\s+/);    
+            var i = 0, len = cNames.length;
+            for(; i < cNames.length; i++){    
+                if(cNames[i] === className) return true;    
             }    
-            return false;    
+            return false;  
+
         },   
 
 
@@ -96,17 +101,6 @@
 				element.attachEvent('on' + type, handler);
 			} else {
 				element['on' + type] = handler;
-			}
-		},
-
-		// 移除事件
-		removeEvent: function (element, type, handler) {
-			if(element.removeEventListener) {
-				element.removeEventListener(type, handler, false);
-			} else if (element.detachEvent) {
-				element.detachEvent('on' + type, handler);
-			} else {
-				element['on' + type] = null;
 			}
 		},
 
@@ -160,7 +154,7 @@
 
 			var arr = [], imageData = this.imageData;
 			var i = 0, len = imageData.length;
-			var theme = this.hasSmallPic ? 'smallPic-theme' : '';
+			var theme = this.hasSmallPic ? this.themeName : '';
 
 			arr.push('<div class="mod-slider-ctrl ' + theme + '">');
 			arr.push(	'<ul class="mod-slider-ctrl-ul">');
@@ -201,6 +195,15 @@
 			this.sliderCtrlUl = this.$('mod-slider-ctrl-ul', this.sliderCtrl)[0];
 			this.bigPics      = this.$('w-bigPic', this.sliderPics);
 			this.sliderCtrlLi = this.sliderCtrlUl.getElementsByTagName('li');
+
+		},
+
+		// 修正小图的位置
+		resizeCtrlTop: function () {
+
+			if(this.hasSmallPic) {
+				this.sliderCtrl.style.top = (this.bigPics[0].clientHeight - this.sliderCtrlUl.clientHeight) / 2 + 'px';
+			}
 
 		},
 
@@ -345,6 +348,7 @@
 
 		this.initDom();
 		this.getInitDom();
+		this.resizeCtrlTop();
 		if(this.autoScroll) {
 			this.scrollPics();
 		}
